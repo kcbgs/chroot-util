@@ -1,0 +1,58 @@
+#!/bin/bash
+
+VERSION=1.0.0
+
+function usage {
+    cat <<EOF
+Usage:
+    $(basename ${0}) [directory] [bin1] ([bin2] [bin3] ...)
+        directory: distination which input bin is copied to
+
+Options:
+    --version, -v     print version
+    --help, -h        print this
+EOF
+}
+
+function add_bin() {
+    bin=`which $1`
+    
+    echo "copy ${bin} to ${dist}"
+    cp --parent -v ${bin} ${dist}
+    
+    echo "copy related libraries to ${dist}"
+    ldd ${bin} | grep "=>" | sed 's/^.*=>\ \(.*\) (.*$/\1/' | awk -v "dist=$dist" '{print "cp --parents -v",$0,dist}' | bash
+}
+
+
+# check arguments
+if [ $# -le 1 ]; then
+    case ${1} in
+        --help|-h)
+            usage
+            exit 0
+        ;;
+
+        --version|-v)
+            echo "Verion: ${VERSION}"
+            exit 0
+        ;;
+    
+        *)
+            echo "ERROR: invalid argument(s)"
+	    usage
+            exit 1
+        ;;
+    esac
+fi
+
+# main process
+dist=$1
+mkdir -p ${dist}
+shift
+
+while [ "$1" != "" ]
+do
+    add_bin $1
+    shift
+done
