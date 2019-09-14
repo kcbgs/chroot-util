@@ -1,4 +1,4 @@
-# chroot-utilsERROR: invalid argument(s)
+# chroot-util
 
 ```
 Usage:
