@@ -15,7 +15,11 @@ EOF
 }
 
 function add_bin() {
-    bin=`which $1`
+    if [ `which $1` != "" ]; then
+        bin=`which $1`
+		else
+        bin=$1
+    fi
     
     echo "copy ${bin} to ${dist}"
     cp --parent -v ${bin} ${dist}
